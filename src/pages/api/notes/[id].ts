@@ -1,19 +1,19 @@
-import dbConnect from '../../../utils/dbConnect'
+import dbConnect from '../../../db/dbConnect'
 import Note from '../../../models/Note'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { getNoteById, updateNote, deleteNote } from '../../../controllers/note'
 
 dbConnect()
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-	const {
-		method,
-		query: { id },
-	} = req
+	const { method, query } = req
+
+	const id = Array.isArray(query.id) ? query.id[0] : query.id
 
 	switch (method) {
 		case 'GET':
 			try {
-				const note = await Note.findById(id)
+				const note = await getNoteById(id)
 				if (!note) return res.status(404).send({ success: false })
 
 				res.status(200).send({ success: true, data: note })
@@ -24,10 +24,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
 		case 'PUT':
 			try {
-				const note = await Note.findByIdAndUpdate(id, req.body, {
-					new: true,
-					runValidators: true,
-				})
+				const note = await updateNote(id, req.body)
 				if (!note) return res.status(404).send({ success: false })
 
 				res.status(200).send({ success: true, data: note })
@@ -38,7 +35,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
 		case 'DELETE':
 			try {
-				const note = await Note.findByIdAndDelete(id)
+				const note = await deleteNote(id)
 				if (!note) return res.status(404).send({ success: false })
 
 				res.status(200).send({ success: true, data: {} })

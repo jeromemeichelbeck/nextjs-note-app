@@ -1,6 +1,8 @@
-import dbConnect from '../../../utils/dbConnect'
-import Note from '../../../models/Note'
 import { NextApiRequest, NextApiResponse } from 'next'
+
+import dbConnect from '../../../db/dbConnect'
+import Note from '../../../models/Note'
+import { getNotes, createNote } from '../../../controllers/note'
 
 dbConnect()
 
@@ -10,7 +12,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 	switch (method) {
 		case 'GET':
 			try {
-				const notes = await Note.find({})
+				const notes = await getNotes()
 
 				res.status(200).send({ success: true, data: notes })
 			} catch (error) {
@@ -20,7 +22,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
 		case 'POST':
 			try {
-				const note = await Note.create(req.body)
+				const note = await createNote(req.body)
 
 				res.status(201).send({ success: true, data: note })
 			} catch (error) {
