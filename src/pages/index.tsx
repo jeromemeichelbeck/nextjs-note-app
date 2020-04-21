@@ -1,8 +1,11 @@
 import { Button, Card, CardContent } from 'semantic-ui-react'
 import Link from 'next/link'
 import fetch from 'isomorphic-unfetch'
+import { NextPage, NextPageContext } from 'next'
 
-const Home = ({ notes }) => (
+import { NotesProps } from '../types/Note'
+
+const Home: NextPage<NotesProps> = ({ notes }) => (
 	<div className="notes-container">
 		<h1>Notes</h1>
 		<div className="grid wrapper">
@@ -31,13 +34,15 @@ const Home = ({ notes }) => (
 	</div>
 )
 
-Home.getInitialProps = async () => {
+Home.getInitialProps = async (ctx: NextPageContext) => {
 	try {
 		const res = await fetch('http://localhost:3000/api/notes')
 		const { data } = await res.json()
 
 		return { notes: data }
-	} catch (error) {}
+	} catch (error) {
+		return { notes: [] }
+	}
 }
 
 export default Home

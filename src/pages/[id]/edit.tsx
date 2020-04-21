@@ -1,13 +1,16 @@
 import fetch from 'isomorphic-unfetch'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, FormEvent } from 'react'
 import { useRouter } from 'next/router'
 import { Form, Button, Loader } from 'semantic-ui-react'
+import { NextPage, NextPageContext } from 'next'
 
-const EditNote = ({ note }) => {
+import { NoteProps, NoteError } from '../../types/Note'
+
+const EditNote: NextPage<NoteProps> = ({ note }) => {
 	const { title, description } = note
 	const [form, setForm] = useState({ title, description })
 	const [isUpdating, setIsUpdating] = useState(false)
-	const [errors, setErrors] = useState({})
+	const [errors, setErrors] = useState<NoteError>({})
 	const router = useRouter()
 
 	useEffect(() => {
@@ -36,7 +39,7 @@ const EditNote = ({ note }) => {
 	}
 
 	const validate = () => {
-		let err = {}
+		let err = {} as NoteError
 
 		if (!form.title) {
 			err.title = 'Title is required'
@@ -48,15 +51,16 @@ const EditNote = ({ note }) => {
 		return err
 	}
 
-	const handleChange = (e) => {
+	const handleChange = (e: FormEvent) => {
 		e.preventDefault()
+		const target = e.target as HTMLInputElement | HTMLTextAreaElement
 		setForm({
 			...form,
-			[e.target.name]: e.target.value,
+			[target.name]: target.value,
 		})
 	}
 
-	const handleSubmit = (e) => {
+	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault()
 		let errs = validate()
 		setErrors(errs)
@@ -109,7 +113,7 @@ const EditNote = ({ note }) => {
 	)
 }
 
-EditNote.getInitialProps = async ({ query }) => {
+EditNote.getInitialProps = async ({ query }: NextPageContext) => {
 	const { id } = query
 	try {
 		const res = await fetch(`http://localhost:3000/api/notes/${id}`)
@@ -117,7 +121,7 @@ EditNote.getInitialProps = async ({ query }) => {
 
 		return { note: data }
 	} catch (error) {
-		return { note: { error: true } }
+		return { note: {} }
 	}
 }
 

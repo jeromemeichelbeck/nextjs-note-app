@@ -1,13 +1,15 @@
-import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, FormEvent } from 'react'
 import fetch from 'isomorphic-unfetch'
 import { Button, Form, Loader } from 'semantic-ui-react'
+import { NextPage } from 'next'
 
-const NewNote = () => {
+import { NoteError } from '../types/Note'
+
+const NewNote: NextPage = () => {
 	const [form, setForm] = useState({ title: '', description: '' })
 	const [isSubmitting, setIsSubmitting] = useState(false)
-	const [errors, setErrors] = useState({})
+	const [errors, setErrors] = useState<NoteError>({})
 	const router = useRouter()
 
 	useEffect(() => {
@@ -36,7 +38,7 @@ const NewNote = () => {
 	}
 
 	const validate = () => {
-		let err = {}
+		let err = {} as NoteError
 
 		if (!form.title) {
 			err.title = 'Title is required'
@@ -48,15 +50,16 @@ const NewNote = () => {
 		return err
 	}
 
-	const handleChange = (e) => {
+	const handleChange = (e: FormEvent) => {
 		e.preventDefault()
+		const target = e.target as HTMLInputElement | HTMLTextAreaElement
 		setForm({
 			...form,
-			[e.target.name]: e.target.value,
+			[target.name]: target.value,
 		})
 	}
 
-	const handleSubmit = (e) => {
+	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault()
 		let errs = validate()
 		setErrors(errs)

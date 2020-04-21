@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-const Navbar = () => (
+const Navbar: React.SFC = () => (
 	<nav className="navbar">
 		<Link href="/">
 			<a className="navbar-brand">Note App</a>

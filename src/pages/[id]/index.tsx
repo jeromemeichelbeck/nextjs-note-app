@@ -2,8 +2,11 @@ import fetch from 'isomorphic-unfetch'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { Confirm, Button, Loader } from 'semantic-ui-react'
+import { NextPage, NextPageContext } from 'next'
 
-const Note = ({ note }) => {
+import { NoteProps } from '../../types/Note'
+
+const Note: NextPage<NoteProps> = ({ note }) => {
 	const [confirm, setConfirm] = useState(false)
 	const [isDeleting, setIsDeleting] = useState(false)
 	const router = useRouter()
@@ -50,7 +53,7 @@ const Note = ({ note }) => {
 	)
 }
 
-Note.getInitialProps = async ({ query }) => {
+Note.getInitialProps = async ({ query }: NextPageContext) => {
 	const { id } = query
 	try {
 		const res = await fetch(`http://localhost:3000/api/notes/${id}`)
@@ -58,7 +61,7 @@ Note.getInitialProps = async ({ query }) => {
 
 		return { note: data }
 	} catch (error) {
-		return { note: { error: true } }
+		return { note: {} }
 	}
 }
 

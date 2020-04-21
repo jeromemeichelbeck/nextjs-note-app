@@ -2,7 +2,7 @@ import Head from 'next/head'
 
 import Navbar from './Navbar'
 
-const Layout = ({ children }) => (
+const Layout: React.SFC = ({ children }) => (
 	<>
 		<Head>
 			<title>Note App</title>
