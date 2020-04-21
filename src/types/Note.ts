@@ -1,8 +1,6 @@
-export interface Note {
-	_id: string
-	title: string
-	description: string
-}
+import { NoteInterface } from '../models/Note'
+
+export interface Note extends NoteInterface {}
 
 export interface NoteProps {
 	note: Note

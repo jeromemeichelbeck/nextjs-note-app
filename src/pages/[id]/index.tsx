@@ -4,12 +4,14 @@ import { useRouter } from 'next/router'
 import { Confirm, Button, Loader } from 'semantic-ui-react'
 import { NextPage, NextPageContext } from 'next'
 
-import { NoteProps } from '../../types/Note'
+import { NoteProps, Note } from '../../types/Note'
 
-const Note: NextPage<NoteProps> = ({ note }) => {
+const ViewNote: NextPage<NoteProps | undefined> = ({ note }) => {
 	const [confirm, setConfirm] = useState(false)
 	const [isDeleting, setIsDeleting] = useState(false)
 	const router = useRouter()
+
+	if (!note) router.push('/')
 
 	useEffect(() => {
 		if (isDeleting) {
@@ -53,16 +55,18 @@ const Note: NextPage<NoteProps> = ({ note }) => {
 	)
 }
 
-Note.getInitialProps = async ({ query }: NextPageContext) => {
+ViewNote.getInitialProps = async ({ query, res }: NextPageContext) => {
 	const { id } = query
 	try {
 		const res = await fetch(`http://localhost:3000/api/notes/${id}`)
-		const { data } = await res.json()
+		const data: Note = (await res.json()).data
+
+		if (!data) throw new Error()
 
 		return { note: data }
 	} catch (error) {
-		return { note: {} }
+		res?.writeHead(300, { Location: '/' }).end()
 	}
 }
 
-export default Note
+export default ViewNote

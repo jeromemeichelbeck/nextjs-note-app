@@ -3,7 +3,7 @@ import Link from 'next/link'
 import fetch from 'isomorphic-unfetch'
 import { NextPage, NextPageContext } from 'next'
 
-import { NotesProps } from '../types/Note'
+import { NotesProps, Note } from '../types/Note'
 
 const Home: NextPage<NotesProps> = ({ notes }) => (
 	<div className="notes-container">
@@ -37,7 +37,7 @@ const Home: NextPage<NotesProps> = ({ notes }) => (
 Home.getInitialProps = async (ctx: NextPageContext) => {
 	try {
 		const res = await fetch('http://localhost:3000/api/notes')
-		const { data } = await res.json()
+		const data: Note[] = (await res.json()).data
 
 		return { notes: data }
 	} catch (error) {

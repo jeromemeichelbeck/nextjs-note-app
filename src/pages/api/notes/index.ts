@@ -1,9 +1,10 @@
 import dbConnect from '../../../utils/dbConnect'
 import Note from '../../../models/Note'
+import { NextApiRequest, NextApiResponse } from 'next'
 
 dbConnect()
 
-export default async (req, res) => {
+export default async (req: NextApiRequest, res: NextApiResponse) => {
 	const { method } = req
 
 	switch (method) {

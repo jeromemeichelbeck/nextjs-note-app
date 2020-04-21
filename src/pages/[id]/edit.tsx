@@ -4,9 +4,9 @@ import { useRouter } from 'next/router'
 import { Form, Button, Loader } from 'semantic-ui-react'
 import { NextPage, NextPageContext } from 'next'
 
-import { NoteProps, NoteError } from '../../types/Note'
+import { NoteProps, NoteError, Note } from '../../types/Note'
 
-const EditNote: NextPage<NoteProps> = ({ note }) => {
+const EditNote: NextPage<NoteProps | undefined> = ({ note }) => {
 	const { title, description } = note
 	const [form, setForm] = useState({ title, description })
 	const [isUpdating, setIsUpdating] = useState(false)
@@ -113,15 +113,17 @@ const EditNote: NextPage<NoteProps> = ({ note }) => {
 	)
 }
 
-EditNote.getInitialProps = async ({ query }: NextPageContext) => {
+EditNote.getInitialProps = async ({ query, res }: NextPageContext) => {
 	const { id } = query
 	try {
 		const res = await fetch(`http://localhost:3000/api/notes/${id}`)
-		const { data } = await res.json()
+		const data: Note = (await res.json()).data
+
+		if (!data) throw new Error()
 
 		return { note: data }
 	} catch (error) {
-		return { note: {} }
+		res?.writeHead(300, { Location: '/' }).end()
 	}
 }
 
