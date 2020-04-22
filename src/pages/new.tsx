@@ -1,41 +1,30 @@
 import { useRouter } from 'next/router'
 import { useState, useEffect, FormEvent } from 'react'
-import fetch from 'isomorphic-unfetch'
 import { Button, Form, Loader } from 'semantic-ui-react'
 import { NextPage } from 'next'
 
 import { NoteError } from '../types/Note'
+import { createNote } from '../api/notes'
 
 const NewNote: NextPage = () => {
 	const [form, setForm] = useState({ title: '', description: '' })
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [errors, setErrors] = useState<NoteError>({})
+
 	const router = useRouter()
 
 	useEffect(() => {
 		if (isSubmitting) {
 			if (Object.keys(errors).length === 0) {
-				createNote()
+				try {
+					createNote(form)
+					router.push('/')
+				} catch (error) {}
 			} else {
 				setIsSubmitting(false)
 			}
 		}
 	}, [isSubmitting])
-
-	const createNote = async () => {
-		try {
-			await fetch('http://localhost:3000/api/notes', {
-				method: 'POST',
-				headers: {
-					Accept: 'application/json',
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(form),
-			})
-
-			router.push('/')
-		} catch (error) {}
-	}
 
 	const validate = () => {
 		let err = {} as NoteError

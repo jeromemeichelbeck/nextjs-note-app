@@ -1,32 +1,25 @@
-import fetch from 'isomorphic-unfetch'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { Confirm, Button, Loader } from 'semantic-ui-react'
-import { NextPage, NextPageContext } from 'next'
+import { NextPage, GetServerSideProps } from 'next'
 
-import { NoteProps, Note } from '../../types/Note'
+import { NoteProps } from '../../types/Note'
+import { getNoteById } from '../../controllers/note'
+import { deleteNote } from '../../api/notes'
 
 const ViewNote: NextPage<NoteProps | undefined> = ({ note }) => {
 	const [confirm, setConfirm] = useState(false)
 	const [isDeleting, setIsDeleting] = useState(false)
 	const router = useRouter()
 
-	if (!note) router.push('/')
-
 	useEffect(() => {
 		if (isDeleting) {
-			deleteNote()
+			try {
+				deleteNote(note._id)
+				router.push('/')
+			} catch (error) {}
 		}
 	}, [isDeleting])
-
-	const deleteNote = async () => {
-		try {
-			await fetch(`http://localhost:3000/api/notes/${note._id}`, {
-				method: 'DELETE',
-			})
-			router.push('/')
-		} catch (error) {}
-	}
 
 	const open = () => setConfirm(true)
 
@@ -55,17 +48,23 @@ const ViewNote: NextPage<NoteProps | undefined> = ({ note }) => {
 	)
 }
 
-ViewNote.getInitialProps = async ({ query, res }: NextPageContext) => {
-	const { id } = query
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+	const id = Array.isArray(query.id) ? query.id[0] : query.id
+	if (!id) {
+		return {
+			props: { note: {} },
+		}
+	}
 	try {
-		const res = await fetch(`http://localhost:3000/api/notes/${id}`)
-		const data: Note = (await res.json()).data
+		const note = await getNoteById(id)
 
-		if (!data) throw new Error()
-
-		return { note: data }
+		return {
+			props: { note },
+		}
 	} catch (error) {
-		res?.writeHead(300, { Location: '/' }).end()
+		return {
+			props: { note: {} },
+		}
 	}
 }
 

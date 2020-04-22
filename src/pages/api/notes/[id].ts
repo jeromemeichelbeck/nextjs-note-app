@@ -1,5 +1,4 @@
 import dbConnect from '../../../db/dbConnect'
-import Note from '../../../models/Note'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getNoteById, updateNote, deleteNote } from '../../../controllers/note'
 

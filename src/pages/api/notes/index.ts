@@ -14,6 +14,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 			try {
 				const notes = await getNotes()
 
+				console.log('from api', notes)
+
 				res.status(200).send({ success: true, data: notes })
 			} catch (error) {
 				res.status(500).send({ success: false })

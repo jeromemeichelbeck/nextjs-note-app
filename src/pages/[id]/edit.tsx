@@ -1,10 +1,11 @@
-import fetch from 'isomorphic-unfetch'
 import { useState, useEffect, FormEvent } from 'react'
 import { useRouter } from 'next/router'
 import { Form, Button, Loader } from 'semantic-ui-react'
-import { NextPage, NextPageContext } from 'next'
+import { NextPage, GetServerSideProps } from 'next'
 
-import { NoteProps, NoteError, Note } from '../../types/Note'
+import { NoteProps, NoteError } from '../../types/Note'
+import { getNoteById } from '../../controllers/note'
+import { updateNote } from '../../api/notes'
 
 const EditNote: NextPage<NoteProps | undefined> = ({ note }) => {
 	const { title, description } = note
@@ -16,27 +17,17 @@ const EditNote: NextPage<NoteProps | undefined> = ({ note }) => {
 	useEffect(() => {
 		if (isUpdating) {
 			if (Object.keys(errors).length === 0) {
-				updateNote()
+				try {
+					updateNote(note._id, form)
+					router.push(`/${note._id}`)
+				} catch (error) {
+					console.error('error')
+				}
 			} else {
 				setIsUpdating(false)
 			}
 		}
 	}, [isUpdating])
-
-	const updateNote = async () => {
-		try {
-			await fetch(`http://localhost:3000/api/notes/${note._id}`, {
-				method: 'PUT',
-				headers: {
-					Accept: 'application/json',
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(form),
-			})
-
-			router.push(`/${note._id}`)
-		} catch (error) {}
-	}
 
 	const validate = () => {
 		let err = {} as NoteError
@@ -113,17 +104,23 @@ const EditNote: NextPage<NoteProps | undefined> = ({ note }) => {
 	)
 }
 
-EditNote.getInitialProps = async ({ query, res }: NextPageContext) => {
-	const { id } = query
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+	const id = Array.isArray(query.id) ? query.id[0] : query.id
+	if (!id) {
+		return {
+			props: { note: {} },
+		}
+	}
 	try {
-		const res = await fetch(`http://localhost:3000/api/notes/${id}`)
-		const data: Note = (await res.json()).data
+		const note = await getNoteById(id)
 
-		if (!data) throw new Error()
-
-		return { note: data }
+		return {
+			props: { note },
+		}
 	} catch (error) {
-		res?.writeHead(300, { Location: '/' }).end()
+		return {
+			props: { note: {} },
+		}
 	}
 }
 

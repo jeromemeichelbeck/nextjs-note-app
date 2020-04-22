@@ -1,25 +1,25 @@
 {
-  "name": "note-app",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
-  "dependencies": {
-    "@types/mongoose": "^5.7.12",
-    "isomorphic-unfetch": "^3.0.0",
-    "mongoose": "^5.9.9",
-    "next": "9.3.5",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
-    "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.88.2"
-  },
-  "devDependencies": {
-    "@types/node": "^13.13.1",
-    "@types/react": "^16.9.34",
-    "typescript": "^3.8.3"
-  }
+	"name": "note-app",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start"
+	},
+	"dependencies": {
+		"@types/mongoose": "^5.7.12",
+		"isomorphic-unfetch": "^3.0.0",
+		"mongoose": "^5.9.9",
+		"next": "^9.3.5",
+		"react": "16.13.1",
+		"react-dom": "16.13.1",
+		"semantic-ui-css": "^2.4.1",
+		"semantic-ui-react": "^0.88.2"
+	},
+	"devDependencies": {
+		"@types/node": "^13.13.1",
+		"@types/react": "^16.9.34",
+		"typescript": "^3.8.3"
+	}
 }
